@@ -1,0 +1,43 @@
+# HTCondor configuration file
+#
+# Configuration placed into this file extends/overwrites the settings in the
+# main HTCondor configuration at /etc/condor/condor_config.
+# It may be advantagous to leave the main configuration file pristine and put
+# local configuration here to ease configuration updates during upgrades of the
+# HTCondor Debian package. Alternatively, it is also possible to place additional
+# configuration files into /etc/condor/config.d that will take precedence over
+# both the main configuration file and this local configuration. Note that
+# DebConf-generated configuration will overwrite settings in this file.
+
+# which HTCondor daemons to run on this machine
+DAEMON_LIST = SCHEDD, MASTER
+# who receives emails when something goes wrong
+CONDOR_ADMIN = root@localhost
+# label to identify the local filesystem in a HTCondor pool
+FILESYSTEM_DOMAIN = $(FULL_HOSTNAME)
+# label to identify the user id of the system in a HTCondor pool
+# (this need to be a fully qualified domain name)
+UID_DOMAIN = uniquindio.edu.co
+# which machine is the central manager of this HTCondor pool
+CONDOR_HOST = rb3-t01-1
+# what machines can access HTCondor daemons on this machine
+ALLOW_WRITE = rb3-t*,tk1-t*
+# the following settings will restrict HTCondor's network access to the internal
+# network
+BIND_ALL_INTERFACES = FALSE
+NETWORK_INTERFACE = 172.30.27.12
+# make HTCondor ignore UID domain name mismatch on systems without a fully
+# qualified domain name (safe because the personal HTCondor does not allow
+# remote access
+TRUST_UID_DOMAIN = TRUE
+# allow HTCondor jobs to run with the same priority as any other machine activity
+# always start jobs once they are submitted
+START = TRUE
+# never suspend jobs
+SUSPEND = FALSE
+# always continue jobs
+CONTINUE = TRUE
+# never preempt
+PREEMPT = FALSE
+# never kill
+KILL = FALSE
