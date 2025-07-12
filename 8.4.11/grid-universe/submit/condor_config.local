@@ -1,0 +1,148 @@
+# HTCondor configuration file
+#
+# Configuration placed into this file extends/overwrites the settings in the
+# main HTCondor configuration at /etc/condor/condor_config.
+# It may be advantagous to leave the main configuration file pristine and put
+# local configuration here to ease configuration updates during upgrades of the
+# HTCondor Debian package. Alternatively, it is also possible to place additional
+# configuration files into /etc/condor/config.d that will take precedence over
+# both the main configuration file and this local configuration. Note that
+# DebConf-generated configuration will overwrite settings in this file.
+
+# Esta versión del archivo local de configuración de Condor contiene una fusión entre
+# el demonio Schedd (Submit) y los demonios Collector y Negotiator (Master)
+# Esta versión es completamente funcional, sin embargo, no es la ultima, ya que
+# es ideal y deseable la división de trabajos aún en entornos Grid
+
+# which HTCondor daemons to run on this machine
+DAEMON_LIST = SCHEDD, MASTER
+
+# --------------- Grid-only variables -------------------
+
+SEC_DEFAULT_AUTHENTICATION = OPTIONAL
+SEC_DEFAULT_AUTHENTICATION_METHODS = CLAIMTOBE
+SEC_DEFAULT_ENCRYPTION = OPTIONAL
+SEC_DEFAULT_INTEGRITY = OPTIONAL
+
+SEC_NEGOTIATOR_AUTHENTICATION = OPTIONAL
+SEC_NEGOTIATOR = OPTIONAL
+SEC_COLLECTOR = OPTIONAL
+SEC_ADVERTISE_SCHEDD = OPTIONAL
+SEC_ADVERTISE_STARTD = OPTIONAL
+
+ENABLE_GRID_UNIVERSE = True
+
+# Configuración específica para SCHEDD
+SCHEDD_ADDRESS_FILE = $(LOG)/.schedd_address
+BIND_ALL_INTERFACES = FALSE
+
+# Permisos específicos para gridmanager
+ALLOW_WRITE_SCHEDD = 172.30.27.43, 127.0.0.1
+ALLOW_READ_SCHEDD = 172.30.27.43, 127.0.0.1
+HOSTALLOW_WRITE = 172.30.27.43, 127.0.0.1
+
+# Debug temporal
+ALL_DEBUG = D_FULLDEBUG
+SCHEDD_DEBUG = D_FULLDEBUG
+
+#ALLOW_WRITE_SCHEDD = 172.30.27.43, rb3-t*
+#ALLOW_READ_SCHEDD = 172.30.27.43, rb3-t*
+
+#ALLOW_READ = 127.0.0.1, 172.30.27.*
+#ALLOW_WRITE = 127.0.0.1, 172.30.27.*
+#ALLOW_ADMIN = 127.0.0.1, 172.30.27.*
+
+#ALLOW_READ = 172.30.27.43, rb3-*
+#ALLOW_WRITE = 172.30.27.43, rb3-*
+
+FLOCK_FROM = 172.30.27.43
+CONDOR_FLOCKED_HOSTS = 172.30.27.41
+
+#ALLOW_WRITE_COLLECTOR = $(ALLOW_WRITE), $(FLOCK_FROM)
+#ALLOW_WRITE_STARTD = $(ALLOW_WRITE), $(FLOCK_FROM)
+#ALLOW_READ_COLLECTOR = $(ALLOW_READ), $(FLOCK_FROM)
+#ALLOW_READ_STARTD = $(ALLOW_READ), $(FLOCK_FROM)
+
+#ALLOW_READ = rb3-*
+#ALLOW_WRITE = rb3-*
+
+ALLOW_READ = 172.30.27.0/24
+ALLOW_WRITE = 172.30.27.0/24
+
+FLOCK_FROM = rb3-t04-3
+
+ALLOW_WRITE_COLLECTOR = $(ALLOW_WRITE), $(FLOCK_FROM)
+ALLOW_WRITE_STARTD    = $(ALLOW_WRITE), $(FLOCK_FROM)
+ALLOW_READ_COLLECTOR  = $(ALLOW_READ), $(FLOCK_FROM)
+ALLOW_READ_STARTD     = $(ALLOW_READ), $(FLOCK_FROM)
+
+# Asegura acceso al schedd desde el gridmanager
+ALLOW_READ_SCHEDD = 172.30.27.43
+ALLOW_WRITE_SCHEDD = 172.30.27.43
+
+# Acceso general del gridmanager
+ALLOW_READ = 172.30.27.43, 127.0.0.1
+ALLOW_WRITE = 172.30.27.43, 127.0.0.1
+#ALLOW_NEGOTIATOR = 172.30.27.43
+#ALLOW_ADVERTISE_SCHEDD = 172.30.27.*
+#ALLOW_ADMIN = 172.30.27.*, 127.0.0.1
+
+# Allow local communication without authentication (for testing)
+ALLOW_NEGOTIATOR = $(ALLOW_NEGOTIATOR), 172.30.27.*
+ALLOW_ADVERTISE_SCHEDD = $(ALLOW_ADVERTISE_SCHEDD), 172.30.27.*
+
+# Or disable security temporarily for troubleshooting
+SEC_DEFAULT_AUTHENTICATION = OPTIONAL
+SEC_DEFAULT_INTEGRITY = OPTIONAL
+SEC_DEFAULT_ENCRYPTION = OPTIONAL
+
+# Allow the pi user from your network to write (submit/manage jobs)
+ALLOW_WRITE = $(ALLOW_WRITE), pi@172.30.27.*, pi@rb3-t04-*
+
+# Or allow all users from your subnet (less secure but simpler for testing)
+ALLOW_WRITE = $(ALLOW_WRITE), 172.30.27.*
+
+# If you want to allow pi from anywhere (least secure)
+ALLOW_WRITE = $(ALLOW_WRITE), pi@*
+
+# Allow local network access
+ALLOW_READ = $(ALLOW_READ), 172.30.27.*
+ALLOW_WRITE = $(ALLOW_WRITE), 172.30.27.*
+ALLOW_NEGOTIATOR = $(ALLOW_NEGOTIATOR), 172.30.27.*
+ALLOW_ADMINISTRATOR = $(ALLOW_ADMINISTRATOR), 172.30.27.*
+ALLOW_ADVERTISE_MASTER = $(ALLOW_ADVERTISE_MASTER), 172.30.27.*
+ALLOW_ADVERTISE_SCHEDD = $(ALLOW_ADVERTISE_SCHEDD), 172.30.27.*
+ALLOW_ADVERTISE_STARTD = $(ALLOW_ADVERTISE_STARTD), 172.30.27.*
+
+# -------------------------------------------------------
+
+# who receives emails when something goes wrong
+CONDOR_ADMIN = root@localhost
+# label to identify the local filesystem in a HTCondor pool
+FILESYSTEM_DOMAIN = $(FULL_HOSTNAME)
+# label to identify the user id of the system in a HTCondor pool
+# (this need to be a fully qualified domain name)
+UID_DOMAIN = uniquindio.edu.co
+# which machine is the central manager of this HTCondor pool
+CONDOR_HOST = rb3-t04-1
+# what machines can access HTCondor daemons on this machine
+ALLOW_WRITE = rb3-t*,tk1-t*
+# the following settings will restrict HTCondor's network access to the internal
+# network
+BIND_ALL_INTERFACES = FALSE
+NETWORK_INTERFACE = 172.30.27.42
+# make HTCondor ignore UID domain name mismatch on systems without a fully
+# qualified domain name (safe because the personal HTCondor does not allow
+# remote access
+TRUST_UID_DOMAIN = TRUE
+# allow HTCondor jobs to run with the same priority as any other machine activity
+# always start jobs once they are submitted
+START = TRUE
+# never suspend jobs
+SUSPEND = FALSE
+# always continue jobs
+CONTINUE = TRUE
+# never preempt
+PREEMPT = FALSE
+# never kill
+KILL = FALSE
